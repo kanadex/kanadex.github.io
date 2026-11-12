@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="night" data-booting>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="preload" href="/fonts/young-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/zcool-kuaile-ui.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      /* 脚本与样式还没到之前，第一帧也得是开机画面的纯黑，不能先闪一帧白/天空蓝。
+         data-booting 在 BootScreen 结束时摘掉，站点本体再淡入。 */
+      html { background: #000; }
+    </style>
+    <title>Kanadex</title>
+    <meta
+      name="description"
+      content="Kanadex 的个人主页：维护 GeometryOS、VerseBox 与 QZXUI。桌面上可以敲命令。"
+    />
+    <meta name="author" content="Kanadex" />
+    <meta name="theme-color" content="#0d0f26" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Kanadex" />
+    <meta
+      property="og:description"
+      content="维护 GeometryOS、VerseBox 与 QZXUI。一个能敲命令的个人桌面。"
+    />
+    <meta property="og:image" content="/media/avatar.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

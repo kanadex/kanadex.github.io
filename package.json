@@ -1,0 +1,32 @@
+{
+  "name": "kanadex-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal website",
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev": "vite --host --port 7777 --strictPort",
+    "build": "pnpm run typecheck && vite build",
+    "preview": "vite preview --port 7777 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "lint:css": "echo \"css lint is handled by stylelint in future\"",
+    "clean": "rimraf dist .vite"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  }
+}

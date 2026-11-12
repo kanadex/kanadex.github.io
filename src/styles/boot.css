@@ -1,0 +1,145 @@
+/* ---------- 开机画面 ----------
+ * 纯黑一屏、一行写出来的名字、一个不确定状态的加载环，停留 3 秒，
+ * 然后和站点交叉淡出（站点本体见 base.css 的 .app / html[data-booting]）。
+ * 这一层不接收指针：它只是一段过场，3 秒里用户点不到任何东西，也不需要点。
+ */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(26px, 4.2vh, 48px);
+  background: var(--void);
+  color: var(--white);
+  user-select: none;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 480ms var(--settle);
+}
+
+.boot.is-leaving {
+  opacity: 0;
+}
+
+/* 只给读屏听的一句；名字与加载环是过场，不重复念。 */
+.boot__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 名字：和左上角墙上那个同一套字形，只是更大。
+ * "写"出来的做法：遮罩是一张两倍宽的软边墨迹，左实右虚，从右往左滑过整行。
+ * 遮罩的边界滑过哪里，哪里的字才露出来，所以是从左往右一笔写成。
+ * 96° 给了它一个笔尖角度：上缘略早、下缘略晚，不是一条直直的扫描线。 */
+.boot__word {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(3.4rem, 9.6vw, 7.6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.012em;
+  color: var(--white);
+  -webkit-mask-image: linear-gradient(96deg, #000 0 50%, transparent 51.2% 100%);
+  mask-image: linear-gradient(96deg, #000 0 50%, transparent 51.2% 100%);
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+}
+
+.boot__word.is-writing {
+  animation: boot-write 1500ms cubic-bezier(0.33, 0, 0.2, 1) forwards;
+}
+
+@keyframes boot-write {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+
+  to {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
+}
+
+/* 加载环：WinUI 3 ProgressRing 的不确定态。
+ * 弧是"头亮、尾淡到透明"的一整段，绕一圈时快慢各一次（不是匀速转盘），
+ * 头端补一个圆点当笔帽——纯 conic-gradient 的断口是平的。 */
+.boot__loader {
+  --boot-ring-size: clamp(34px, 3.6vw, 52px);
+  --boot-ring-stroke: clamp(2.6px, 0.22vw, 3.2px);
+  position: relative;
+  width: var(--boot-ring-size);
+  height: var(--boot-ring-size);
+  opacity: 0;
+  animation: boot-loader-in 420ms 1000ms var(--settle) forwards;
+}
+
+/* 环分两层画：弧（有遮罩，只留一圈环带）+ 头端圆点。
+ * 圆点单独一层，因为它必须落在遮罩外面那半个弧上，才能把断口包圆。 */
+.boot__ring {
+  position: absolute;
+  inset: 0;
+  animation: boot-ring-spin 1360ms cubic-bezier(0.42, 0.04, 0.58, 0.96) infinite;
+}
+
+.boot__ring-arc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(254, 254, 254, 0) 0deg,
+    rgba(254, 254, 254, 0) 84deg,
+    rgba(254, 254, 254, 0.42) 150deg,
+    rgba(254, 254, 254, 0.92) 226deg,
+    var(--white) 252deg,
+    var(--white) 262deg,
+    rgba(254, 254, 254, 0) 262deg
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--boot-ring-stroke)),
+    #000 calc(100% - var(--boot-ring-stroke))
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--boot-ring-stroke)),
+    #000 calc(100% - var(--boot-ring-stroke))
+  );
+}
+
+.boot__ring-cap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--boot-ring-stroke);
+  height: var(--boot-ring-stroke);
+  margin: calc(var(--boot-ring-stroke) / -2) 0 0 calc(var(--boot-ring-stroke) / -2);
+  border-radius: 50%;
+  background: var(--white);
+  transform: rotate(262deg) translateY(calc((var(--boot-ring-size) - var(--boot-ring-stroke)) / -2));
+}
+
+@keyframes boot-loader-in {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes boot-ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,86 @@
+/* 设计令牌。
+ *
+ * 全场只有三个颜色：墨蓝、纯白、灯光的那一点暖色。
+ * 没有第二套主题 —— 只有深色。浅色模式意味着两倍的颜色失控面，已经删掉。
+ * 所有灰阶都由"白 × 透明度"或"墨蓝 × 透明度"派生，不允许出现第五种色相。
+ */
+:root {
+  color-scheme: dark;
+
+  /* ── 三色 ── */
+  --blue: #231ccb;
+  --blue-deep: #16118a;
+  --blue-night: #100d5e;
+  --white: #fefefe;
+  --warm: #ffd39b;
+  --warm-hot: #fff2d6;
+  /* 开机画面是纯黑：不是深蓝、不是"接近黑"。只给开机那一层用。 */
+  --void: #000;
+
+
+  /* ── 天空：同一色相的三个明度，不是三种颜色 ── */
+  --sky-top: #241dc4;
+  --sky-mid: #3b33e2;
+  --sky-bottom: #2b23c8;
+
+  /* ── 地面：纯白，线是墨蓝 ── */
+  --ground: #fefefe;
+  --ground-line: var(--blue);
+  --ground-shade: #e6e4ff;
+
+  /* ── 窗口：深色纸片，白描边 ── */
+  --paper: #14113f;
+  --paper-2: #1b1750;
+  --paper-3: #241f63;
+  --paper-line: rgba(254, 254, 254, 0.92);
+  --paper-line-soft: rgba(254, 254, 254, 0.28);
+  --text: #f3f0ff;
+  --text-2: rgba(243, 240, 255, 0.76);
+  --text-3: rgba(243, 240, 255, 0.52);
+
+  /* ── 终端：比纸再深一档，同一色系 ── */
+  --term-bg: #0b0a26;
+  --term-bg-2: #131039;
+  --term-fg: #ece8ff;
+  --term-dim: rgba(236, 232, 255, 0.56);
+  --term-accent: #9f97ff;
+  --term-ok: #7fe3b0;
+  --term-warn: #ffb3a0;
+  /* 提示符里的路径色：蓝，和"深蓝主题"同族但能在深底上读出来 */
+  --term-path: #7ba7ff;
+
+  /* ── 灯：白灯体 + 墨蓝线 + 暖光 ── */
+  --lamp-body: #fefefe;
+  --lamp-body-shade: #d9d5ff;
+  --lamp-line: var(--blue);
+  --lamp-metal: #231ccb;
+
+  /* 图标：白色线稿，只有一种颜色 */
+  --icon-ink: var(--white);
+
+  /* ── 字体 ── */
+  --serif: "Young Serif", "Songti SC", "Source Han Serif SC", "Noto Serif SC", "Palatino Linotype",
+    Georgia, serif;
+  --read: "Literata", "Songti SC", "Source Han Serif SC", "Noto Serif SC", Georgia, serif;
+  --hand: "Literata", "Kaiti SC", KaiTi, STKaiti, "AR PL UKai CN", cursive;
+  /* 漫画字：桌面入口标签与状态章用，只带站内标签用到的字（见 fonts.css），缺字回落 --hand */
+  --comic: "ZCOOL KuaiLe", "Kaiti SC", KaiTi, STKaiti, cursive;
+  --mono: "Cascadia Code", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* ── 动效 ── */
+  --spring: cubic-bezier(0.5, 1.6, 0.7, 1);
+  --settle: cubic-bezier(0.25, 1, 0.5, 1);
+
+  /* 颗粒：整张画的笔触都靠它 */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* ── 版面 ── */
+  --lamp-h: min(62svh, 44vw, 760px);
+  --lamp-w: calc(var(--lamp-h) * 0.6702);
+  --dock-space: 116px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --maxw: 1280px;
+  --radius-panel: 16px 12px 18px 11px;
+  --shadow-window: 8px 10px 0 rgba(10, 8, 60, 0.55);
+}

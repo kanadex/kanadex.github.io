@@ -1,0 +1,213 @@
+/* ---------- 固定舞台 ---------- */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--blue);
+}
+
+/* ---------- 天空：同一色相的三档明度 ---------- */
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    180deg,
+    var(--sky-top) 0%,
+    var(--sky-mid) 44%,
+    var(--sky-bottom) 100%
+  );
+}
+
+/* 颗粒：整张画的笔触。两层，一层压反差一层压细纹 */
+.sky__grain {
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  background-size: 220px 220px;
+  mix-blend-mode: overlay;
+  opacity: 0.42;
+}
+
+.sky__grain--fine {
+  background-size: 110px 110px;
+  mix-blend-mode: soft-light;
+  opacity: 0.6;
+}
+
+.sky__stars {
+  position: absolute;
+  inset: 0;
+  mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 94%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 64%, transparent 94%);
+}
+
+.sky__star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 0 6px 1px rgba(254, 254, 254, 0.45);
+  animation: twinkle 4.6s ease-in-out infinite;
+}
+
+.sky__star--big {
+  box-shadow: 0 0 12px 3px rgba(254, 254, 254, 0.6);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: scale(0.9);
+  }
+  45% {
+    opacity: 0.95;
+    transform: scale(1.3);
+  }
+}
+
+/* 月亮：一块纯白，没有陨石坑的花纹 */
+.sky__moon {
+  position: absolute;
+  right: 30%;
+  top: 5%;
+  width: clamp(64px, 6vw, 104px);
+  aspect-ratio: 1;
+}
+
+.sky__moon-disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 0 64px 18px rgba(254, 254, 254, 0.16);
+}
+
+.sky__moon-halo {
+  position: absolute;
+  inset: -90%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(254, 254, 254, 0.12), transparent 62%);
+}
+
+/* ---------- 地面：纯白 + 墨蓝线 ---------- */
+
+.ground {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40vh;
+  display: block;
+}
+
+.ground path {
+  vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.ground__far {
+  fill: var(--ground-shade);
+  stroke: var(--ground-line);
+  stroke-width: 3.4;
+  opacity: 0.55;
+}
+
+.ground__mid {
+  fill: var(--ground-shade);
+  stroke: var(--ground-line);
+  stroke-width: 4.4;
+  opacity: 0.8;
+}
+
+.ground__desk {
+  fill: var(--ground);
+  stroke: var(--ground-line);
+  stroke-width: 5.6;
+}
+
+.ground__sketch path {
+  fill: none;
+  stroke: var(--ground-line);
+  stroke-width: 2.6;
+  opacity: 0.45;
+}
+
+/* ---------- 台灯 ---------- */
+
+.beam-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lamp {
+  position: absolute;
+  z-index: 3;
+  right: clamp(10px, 4.2vw, 74px);
+  /* 底座压在右侧脊线上 */
+  bottom: 21.5%;
+  width: var(--lamp-w);
+  height: var(--lamp-h);
+  overflow: visible;
+}
+
+.lamp__lean,
+.lamp__upper,
+.lamp__head {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* 三个关节的原点：底座、中关节、灯头。和部件图共用同一张画布坐标。 */
+.lamp__lean {
+  transform-origin: 58.3% 99%;
+}
+
+.lamp__upper {
+  transform-origin: 93.01% 47.62%;
+}
+
+.lamp__head {
+  transform-origin: 58.04% 11.27%;
+}
+
+.lamp__part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+
+@media (max-width: 860px) {
+  .sky__moon {
+    right: 8%;
+    top: 6%;
+    width: 78px;
+  }
+
+  .ground {
+    height: 44vh;
+  }
+
+  .lamp {
+    right: -6vw;
+    bottom: 24%;
+    width: calc(64vw * 0.6702);
+    height: 64vw;
+  }
+}

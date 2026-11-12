@@ -1,0 +1,379 @@
+/* ---------- 窗口内容 ---------- */
+
+.pane {
+  padding: clamp(16px, 2vw, 24px);
+  font-size: 0.94rem;
+  line-height: 1.72;
+}
+
+.pane__foot {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1.3px dashed var(--paper-line-soft);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+
+.pane__foot a {
+  border-bottom: 1.4px dotted var(--warm);
+}
+
+/* 关于 */
+
+.pane--about {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 22px);
+  align-items: start;
+}
+
+.pane__portrait {
+  position: relative;
+  border: 1.6px solid var(--paper-line);
+  border-radius: 8px;
+  padding: 5px;
+  background: var(--paper-2);
+  transform: rotate(-2deg);
+}
+
+.pane__portrait img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.pane__portrait-tag {
+  position: absolute;
+  right: -6px;
+  bottom: -14px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+  background: var(--paper);
+  padding: 0 4px;
+  border-bottom: 1.6px solid var(--warm);
+  transform: rotate(-3deg);
+}
+
+.pane--about .pane__text > p {
+  max-width: 46ch;
+  color: var(--text-2);
+}
+
+.pane__host {
+  margin: 0 0 6px;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.pane--about .pane__text > p.pane__host {
+  color: var(--warm);
+}
+
+/* neofetch 的字段：两列对齐，不加分隔线 */
+.pane__sys {
+  margin: 0 0 4px;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.pane__sys > div {
+  display: grid;
+  grid-template-columns: 7.2em minmax(0, 1fr);
+  gap: 8px;
+}
+
+.pane__sys dt {
+  color: var(--text-3);
+}
+
+.pane__sys dd {
+  margin: 0;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.pane__stack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.pane__stack h4 {
+  margin: 0 0 6px;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  color: var(--text-3);
+}
+
+.pane__stack ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pane__stack .chip {
+  font-size: 0.68rem;
+  padding: 0.18em 0.55em;
+}
+
+/* 项目 */
+
+.pane--projects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1.5px solid var(--paper-line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.card__head h3 {
+  flex: 1;
+  font-size: 1.1rem;
+}
+
+.card__index {
+  color: var(--warm);
+  font-size: 0.95rem;
+}
+
+.card--mint .card__index {
+  color: #2f6f57;
+}
+
+.card--ink .card__index {
+  color: var(--text-3);
+}
+
+.card .stamp {
+  font-size: 0.82rem;
+  padding: 0.24em 0.6em 0.2em;
+}
+
+.card__sub {
+  margin: 0;
+  font-family: var(--hand);
+  font-size: 0.86rem;
+  color: var(--text-3);
+}
+
+.card__summary {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-2);
+}
+
+.card__points {
+  margin: 0;
+  padding-left: 1em;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card__tags .chip {
+  font-size: 0.64rem;
+  padding: 0.16em 0.5em;
+}
+
+.card__media {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.card__media figure {
+  margin: 0;
+}
+
+.card__media img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1.2px solid var(--paper-line-soft);
+}
+
+.card__media figcaption {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-3);
+  padding-top: 3px;
+}
+
+.card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.card__actions .link {
+  font-size: 0.72rem;
+}
+
+/* 随笔 */
+
+.pane--notes .notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: note;
+}
+
+.notes li {
+  display: grid;
+  grid-template-columns: 5.6em minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1.2px dashed var(--paper-line-soft);
+}
+
+.notes li:first-child {
+  border-top: 0;
+}
+
+.notes__year {
+  padding-top: 0.32em;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--warm);
+  white-space: nowrap;
+}
+
+.notes p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+/* 联系 */
+
+.pane__mail {
+  display: inline-block;
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  color: var(--text);
+  border-bottom: 2px solid var(--warm);
+  margin-bottom: 10px;
+}
+
+.pane__mail:hover {
+  color: var(--warm);
+}
+
+.pane__links {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pane__links li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1.2px dashed var(--paper-line-soft);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+}
+
+/* 最后一行不再画一条悬空的虚线；和页脚之间由 .pane__foot 的上边框分隔 */
+.pane__links li:last-child {
+  border-bottom: 0;
+}
+
+.pane__links li span {
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+}
+
+.pane__links a {
+  color: var(--text-2);
+  word-break: break-all;
+}
+
+.pane__links a:hover {
+  color: var(--warm);
+}
+
+@media (max-width: 720px) {
+  .pane--about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pane__portrait {
+    width: 108px;
+  }
+
+  .pane__stack {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pane--projects {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* 项目截图：点开图片查看器 */
+.card__shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.25s var(--spring), filter 0.2s;
+}
+
+.card__shot:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.card__shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

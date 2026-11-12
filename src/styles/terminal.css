@@ -1,0 +1,161 @@
+/* ---------- 终端：一条连续文本流 ---------- */
+
+.term {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--term-bg);
+  color: var(--term-fg);
+  font-family: var(--mono);
+}
+
+.term__stream {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overflow-x: auto;
+  padding: 14px 16px 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(242, 233, 215, 0.22) transparent;
+}
+
+.term__stream::-webkit-scrollbar {
+  width: 8px;
+}
+
+.term__stream::-webkit-scrollbar-thumb {
+  background: rgba(242, 233, 215, 0.2);
+  border-radius: 8px;
+}
+
+.term__line {
+  margin: 0;
+  /* 全终端只有一个字号：以前字符画 0.66rem、正文 0.84rem，同一屏两种大小 */
+  font-size: 0.78rem;
+  line-height: 1.62;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.term__line--text {
+  color: var(--term-fg);
+}
+
+.term__line--dim {
+  color: var(--term-dim);
+}
+
+.term__line--ok {
+  color: var(--term-ok);
+}
+
+.term__line--warn {
+  color: var(--term-warn);
+}
+
+.term__line--accent {
+  color: var(--term-accent);
+}
+
+/* 字符画：和正文同字号、不换行、不缩放、不裁切。
+   110 列也好 55 列也好，都必须原样排出来；宁可横向滚动，也不把它压变形。 */
+.term__line--art {
+  white-space: pre;
+  line-height: 1.02;
+  letter-spacing: 0;
+  color: var(--term-fg);
+}
+
+/* 分段上色：neofetch 的"冒号左边"和值分开，但不破坏对齐 */
+.term__span--key {
+  color: var(--term-accent);
+}
+
+.term__span--val {
+  color: var(--term-fg);
+}
+
+.term__line--echo,
+.term__line--input {
+  color: var(--term-fg);
+}
+
+.term__cmd {
+  color: var(--term-fg);
+}
+
+/* 输入行就是最后一行：和 prompt 同行，没有边框、没有背景 */
+.term__line--prompt {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.term__prompt {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* 用户名与主机名绿，@ : 与提示符白，路径蓝 —— 和真终端的分段一致 */
+.term__prompt-user,
+.term__prompt-host {
+  color: var(--term-ok);
+}
+
+.term__prompt-mark,
+.term__prompt-path {
+  color: var(--term-fg);
+}
+
+.term__prompt-path {
+  color: var(--term-path);
+}
+
+.term__prompt-mark + .term__prompt-path {
+  color: var(--term-path);
+}
+
+.term__input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--term-fg);
+  font: inherit;
+  caret-color: var(--term-accent);
+}
+
+.term__quick {
+  display: flex;
+  flex: none;
+  gap: 16px;
+  padding: 6px 16px 10px;
+  border-top: 1px dashed rgba(242, 233, 215, 0.12);
+  color: var(--term-dim);
+  font-size: 0.7rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.term__quick::-webkit-scrollbar {
+  display: none;
+}
+
+.term__quick-item {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s;
+}
+
+.term__quick-item:hover {
+  color: var(--term-accent);
+}

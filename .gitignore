@@ -1,0 +1,24 @@
+# 依赖与产物
+node_modules/
+dist/
+dist-ssr/
+dist.tar.gz
+.vite/
+*.local
+
+# 编辑器 / 系统
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# 日志与临时文件
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# 本地素材与草稿（不随仓库发布）
+_bin/
+_audit/
+*.zip

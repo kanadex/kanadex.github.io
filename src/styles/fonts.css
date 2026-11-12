@@ -1,0 +1,64 @@
+/**
+ * 自托管字体。运行时**不请求任何外部域名**，文件就在仓库里（public/fonts/）。
+ * 两份都是 SIL Open Font License 1.1，许可证随文件一起放在同目录。
+ *
+ * 为什么必须带真字体：上一版用 Georgia 加粗 + -webkit-text-stroke + 硬阴影去"装"厚重感，
+ * 那是拿合成笔画冒充字形设计，远景一看就是假的。Young Serif 本身就是粗重的杂志海报体。
+ *
+ * 只带 latin 子集：中文继续走系统衬线回退（Songti SC / Noto Serif SC），
+ * 这 26KB 只服务英文名字和拉丁字母。
+ */
+
+@font-face {
+  font-family: "Young Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/young-serif-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Literata";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/literata-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/**
+ * 站酷快乐体（ZCOOL KuaiLe，OFL 1.1）：只给"漫画字"这一类标签用。
+ * 桌面入口标签（终端/关于/项目/笔记/联系/GitHub）与项目卡状态章。
+ * 子集 = ASCII + 站内用到的 21 个汉字，6KB。换标签文案时按同一份命令重新生成，
+ * 不要另引第二套字体：
+ *
+ *   pyftsubset ZCOOLKuaiLe-Regular.ttf \
+ *     --text="终端关于项目笔记联系长期维护开发中即将开源未" \
+ *     --unicodes="U+0020-007E" --flavor=woff2 --layout-features= --no-hinting \
+ *     --desubroutinize --output-file=public/fonts/zcool-kuaile-ui.woff2
+ *
+ * 文件名换了就要同步改 src：浏览器会照旧缓存同名 woff2，子集扩了字也会继续用旧的，
+ * 于是左边的菜单标签回落成楷体（这个坑已经踩过一次）。
+ *
+ * 子集里没有的字会回落到 --hand 的楷体，不会出豆腐块。
+ */
+@font-face {
+  font-family: "ZCOOL KuaiLe";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/zcool-kuaile-ui.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Literata";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/literata-latin-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

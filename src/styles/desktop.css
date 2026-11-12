@@ -1,0 +1,642 @@
+/* ---------- 墙上的名字 ---------- */
+
+.brand {
+  position: fixed;
+  top: clamp(96px, 15vh, 168px);
+  left: clamp(64px, 7vw, 132px);
+  z-index: 2;
+  max-width: min(24ch, 27vw);
+  pointer-events: none;
+}
+
+/* 名字是这张画的主角：用 Young Serif 真字形，不描边、不加阴影。
+   字号取参考站同一档：clamp(2.6rem, min(6vw, 10svh), 5.6rem)。 */
+.brand__name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.6rem, min(6vw, 10svh), 5.6rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--white);
+}
+
+.brand__tagline {
+  margin: 10px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(1rem, 1.4vw, 1.22rem);
+  line-height: 1.5;
+  color: rgba(254, 254, 254, 0.78);
+}
+
+/* ---------- 桌面与窗口 ---------- */
+
+.desktop {
+  position: fixed;
+  inset: 62px var(--gutter) var(--dock-space) var(--gutter);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(254, 254, 254, 0.1);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--text);
+  box-shadow:
+    0 34px 70px -26px rgba(0, 0, 0, 0.8),
+    0 10px 24px -12px rgba(0, 0, 0, 0.55),
+    0 0 0 0.5px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.win.is-focus {
+  box-shadow:
+    0 46px 90px -28px rgba(0, 0, 0, 0.86),
+    0 14px 30px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 0.5px rgba(0, 0, 0, 0.5);
+}
+
+/* 最大化：圆角收掉，滚动条贴右边 */
+.win.is-max {
+  border-radius: 0;
+}
+
+.win.is-max .win__body {
+  scrollbar-gutter: stable;
+}
+
+/* 拖动中：只临时关掉 rect 过渡；松手立刻恢复 .35s 过渡。
+   这个类只在 pointermove 确认移动后才挂，点击/双击永远不会带上它。 */
+.win.is-dragging {
+  user-select: none;
+}
+
+body.is-dragging-window {
+  user-select: none;
+}
+
+/* hidden 属性必须真的藏起来：.win 的 display:flex 会盖掉 UA 默认值 */
+.win[hidden] {
+  display: none;
+}
+
+/* 拉伸把手：贴内侧，给方向光标。窗口本身不写 transition，拖动/拉伸直接跟指针。 */
+.win__grip {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+
+.win__grip--n {
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 7px;
+  cursor: ns-resize;
+}
+
+.win__grip--s {
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 7px;
+  cursor: ns-resize;
+}
+
+.win__grip--w {
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 7px;
+  cursor: ew-resize;
+}
+
+.win__grip--e {
+  right: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 7px;
+  cursor: ew-resize;
+}
+
+.win__grip--nw,
+.win__grip--ne,
+.win__grip--sw,
+.win__grip--se {
+  width: 14px;
+  height: 14px;
+}
+
+.win__grip--nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.win__grip--ne {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.win__grip--sw {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+
+.win__grip--se {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize;
+}
+
+/* 拉伸中：光标由 body 决定，指针跑到窗口外面也不会变成箭头 */
+body[data-resizing] {
+  user-select: none;
+}
+
+body[data-resizing='n'],
+body[data-resizing='s'] {
+  cursor: ns-resize;
+}
+
+body[data-resizing='e'],
+body[data-resizing='w'] {
+  cursor: ew-resize;
+}
+
+body[data-resizing='ne'],
+body[data-resizing='sw'] {
+  cursor: nesw-resize;
+}
+
+body[data-resizing='nw'],
+body[data-resizing='se'] {
+  cursor: nwse-resize;
+}
+
+.win__bar {
+  display: flex;
+  flex: none;
+  height: 36px;
+  touch-action: none;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  background: linear-gradient(180deg, rgba(254, 254, 254, 0.055), rgba(254, 254, 254, 0.012));
+  border-bottom: 1px solid rgba(254, 254, 254, 0.07);
+}
+
+.win__dots {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 左上角三键：就是真的关闭 / 最小化 / 最大化 */
+.win__dot {
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(254, 254, 254, 0.16);
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.28);
+  transition: filter 0.15s;
+}
+
+.win__dot svg {
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  transition: opacity 0.14s;
+}
+
+.win__dots:hover .win__dot svg,
+.win__dot:focus-visible svg {
+  opacity: 1;
+}
+
+.win__dot:hover {
+  filter: brightness(1.12);
+}
+
+.win__dot:active {
+  filter: brightness(0.92);
+}
+
+.win__dot--close {
+  background: #ff5f57;
+}
+
+
+
+.win__dot--min {
+  background: #febc2e;
+}
+
+
+
+.win__dot--max {
+  background: #28c840;
+}
+
+
+
+
+
+
+
+
+
+
+
+.win__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.win__sub {
+  font-size: 0.66rem;
+  color: var(--text-3);
+}
+
+.win__state {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: rgba(243, 240, 255, 0.4);
+}
+
+.win__state.is-on {
+  color: var(--warm);
+}
+
+
+
+.win__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+/* 终端窗口：整窗是暗的 */
+.win--night {
+  background-color: var(--term-bg);
+  color: var(--term-fg);
+}
+
+.win--night .win__bar {
+  background: linear-gradient(180deg, rgba(254, 254, 254, 0.07), rgba(254, 254, 254, 0.02));
+}
+
+
+
+.win--night .win__sub {
+  color: var(--term-dim);
+}
+
+
+.win--night .win__body {
+  overflow: hidden;
+}
+
+/* ---------- 任务栏 ---------- */
+
+/* dock 永远压在窗口之上；不要再写 overflow，悬停菜单要能弹到 chip 外面 */
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 14px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 24px);
+  padding: 7px 12px;
+  border: 1px solid rgba(254, 254, 254, 0.14);
+  border-radius: 20px;
+  background: rgba(18, 15, 56, 0.72);
+  backdrop-filter: blur(20px) saturate(1.5);
+  box-shadow:
+    0 20px 44px -18px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(254, 254, 254, 0.1);
+  transform: translateX(-50%);
+}
+
+.dock__items {
+  display: flex;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 菜单的定位上下文：菜单是 slot 的子元素，指针移进菜单不会把 chip 关掉 */
+.dock__slot {
+  position: relative;
+}
+
+.dock__item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 1.3px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.24s var(--settle);
+}
+
+.dock__item:hover {
+  transform: translateY(-2px);
+  border-color: var(--paper-line-soft);
+}
+
+/* chip 里的图标与桌面图标是同一套 SVG，只靠尺寸区分 */
+.dock__icon {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+
+.dock__icon .app-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.dock__item.is-active {
+  background: var(--paper-3);
+  border-color: var(--paper-line);
+  color: var(--text);
+}
+
+/* 下沿暖色横条 = 这是最上层的那个窗口。
+ * 换焦点时旧的一条横向收回去、新的一条从中间长出来（WinUI 3 的指示条也是这么动的）。
+ * 最小化、失去焦点都是收回去，所以不再单独写 is-min 分支。 */
+.dock__item::after {
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 1px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--warm);
+  transform: scaleX(0);
+  transform-origin: 50% 50%;
+  /* 一条 3px 的指示条不该回弹：过冲会缩成负值再弹回来，看着像闪一下。
+     放大和缩小都走 settle，只保留横向伸长的过程。 */
+  transition: transform 200ms var(--settle);
+}
+
+.dock__item.is-active::after {
+  transform: scaleX(1);
+}
+
+.dock__item.is-min {
+  border-color: var(--paper-line-soft);
+}
+
+/* 悬停菜单：纸色、墨线、与窗口同族的圆角，不是系统 tooltip */
+.dock__menu {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 152px;
+  padding: 8px 8px 7px;
+  border: 1px solid rgba(254, 254, 254, 0.14);
+  border-radius: 10px;
+  background: rgba(22, 18, 64, 0.92);
+  backdrop-filter: blur(18px) saturate(1.4);
+  color: var(--text);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(254, 254, 254, 0.08);
+  transform: translateX(-50%);
+}
+
+/* 补上 chip 与菜单之间的 10px 空隙，指针经过时不会闪关 */
+.dock__menu::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+}
+
+.dock__menu-name {
+  margin: 0 0 3px;
+  padding: 0 5px 5px;
+  border-bottom: 1.4px dashed var(--paper-line-soft);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.dock__menu-item {
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px 10px 7px 9px;
+  background: none;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.16s, color 0.16s;
+}
+
+.dock__menu-item:hover {
+  background: var(--paper-3);
+}
+
+.dock__menu-item--close:hover {
+  color: #b4442c;
+}
+
+/* ---------- 桌面图标 ---------- */
+
+.desk-objects {
+  position: fixed;
+  left: clamp(64px, 7vw, 132px);
+  top: clamp(340px, 42vh, 400px);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  width: 280px;
+}
+
+.obj {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 1px 0;
+  border: 0;
+  background: none;
+  color: var(--white);
+  cursor: pointer;
+  /* hover 只抬 2px：不放大、不旋转、不做阴影动画 */
+  transition: transform 0.2s var(--settle);
+}
+
+.obj:hover,
+.obj:focus-visible {
+  transform: translateY(-2px);
+}
+
+.obj__icon {
+  display: block;
+  flex: none;
+  width: 38px;
+  height: 38px;
+}
+
+
+.obj__icon .app-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.obj__label {
+  font-family: var(--comic);
+  font-size: clamp(1.24rem, 1.7vw, 1.56rem);
+  line-height: 1.1;
+  color: var(--white);
+}
+
+@media (max-width: 860px) {
+  /* 窄屏上 27vw 只剩 100px 出头，名字和一句话自我介绍会被挤成竖条；
+     左边的 64px 也是给桌面留的，窄屏贴着 --gutter 走。桌面端的 clamp 不动。 */
+  .brand {
+    left: var(--gutter);
+    max-width: calc(100vw - var(--gutter) * 2);
+  }
+
+  .desktop {
+    inset: 62px 10px var(--dock-space);
+  }
+
+  .win {
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .desk-objects {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: calc(var(--dock-space) + 18px);
+    width: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .obj {
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .obj__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .obj__label {
+    font-size: 0.78rem;
+  }
+
+  .dock__title {
+    display: none;
+  }
+
+  .dock__item {
+    padding: 0.28em 0.5em;
+  }
+}
+
+
+/* ---------- 图片查看器 ---------- */
+
+.viewer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #07061c;
+  touch-action: none;
+  cursor: grab;
+}
+
+.viewer:active {
+  cursor: grabbing;
+}
+
+/* 底部的 img{max-width:100%} 会把图钳住，这里必须放开 */
+.viewer__img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  max-width: none;
+  max-height: none;
+  transform-origin: 0 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+}
+
+.viewer__hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(254, 254, 254, 0.16);
+  background: rgba(8, 6, 32, 0.74);
+  backdrop-filter: blur(10px);
+  color: #f3f0ff;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+}
