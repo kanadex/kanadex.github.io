@@ -20,7 +20,7 @@
 ```bash
 pnpm install
 pnpm dev      # http://localhost:7777
-pnpm build    # 产物在 dist/
+pnpm build    # dist/
 ```
 
 需要 Node ≥ 20.10 与 pnpm
