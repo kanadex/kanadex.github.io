@@ -4,6 +4,26 @@ import { cssEasing } from '@/lib/easing';
 const DURATION_RECT = 350;
 const DURATION_COLLAPSE = 320;
 
+/**
+ * getBoundingClientRect() 会把入场的 scale 算进去；rect 动画要的是布局盒。
+ * 入场改的是独立的 CSS scale（不是 transform），这里按 scale 反算，
+ * 否则窗口刚出现就最大化，会从缩小后的矩形起跳。
+ */
+function rectOf(el: HTMLElement): DOMRect {
+  const rect = el.getBoundingClientRect();
+  const raw = getComputedStyle(el).scale;
+  const scale = raw === 'none' ? 1 : Number.parseFloat(raw);
+  if (!scale || scale === 1) return rect;
+  const width = rect.width / scale;
+  const height = rect.height / scale;
+  return new DOMRect(
+    rect.left + (rect.width - width) / 2,
+    rect.top + (rect.height - height) / 2,
+    width,
+    height
+  );
+}
+
 interface MotionOptions {
   node: HTMLElement | null;
   maximized: boolean;
@@ -32,7 +52,7 @@ export function useWindowMotion({ node, maximized, minimized, chipTransform, isD
     if (!el) return;
     // 每次提交都滚动一次：prevRect = 变化前，lastRect = 当前
     prevRect.current = lastRect.current;
-    lastRect.current = el.getBoundingClientRect();
+    lastRect.current = rectOf(el);
   });
 
   const desktopBox = () => {
@@ -64,16 +84,16 @@ export function useWindowMotion({ node, maximized, minimized, chipTransform, isD
     if (isDragging()) {
       running?.cancel();
       rectAnim.current = null;
-      prevRect.current = el.getBoundingClientRect();
-      lastRect.current = el.getBoundingClientRect();
+      prevRect.current = rectOf(el);
+      lastRect.current = rectOf(el);
       return;
     }
     // 打断：从当前渲染位置起；否则从变化前的那一帧起
-    const from = running ? el.getBoundingClientRect() : prevRect.current;
+    const from = running ? rectOf(el) : prevRect.current;
     if (running) running.cancel();
     if (!from) return;
 
-    const target = el.getBoundingClientRect();
+    const target = rectOf(el);
     if (Math.abs(from.width - target.width) < 2 && Math.abs(from.left - target.left) < 2) return;
 
     const anim = el.animate([frame(from), frame(target)], {
@@ -85,7 +105,7 @@ export function useWindowMotion({ node, maximized, minimized, chipTransform, isD
     anim.onfinish = () => {
       anim.cancel();
       rectAnim.current = null;
-      lastRect.current = el.getBoundingClientRect();
+      lastRect.current = rectOf(el);
     };
     anim.oncancel = () => {
       if (rectAnim.current === anim) rectAnim.current = null;
@@ -121,7 +141,7 @@ export function useWindowMotion({ node, maximized, minimized, chipTransform, isD
     anim.onfinish = () => {
       anim.cancel();
       chipAnim.current = null;
-      lastRect.current = el.getBoundingClientRect();
+      lastRect.current = rectOf(el);
     };
     anim.oncancel = () => {
       if (chipAnim.current === anim) chipAnim.current = null;
@@ -133,7 +153,7 @@ export function useWindowMotion({ node, maximized, minimized, chipTransform, isD
     chipAnim.current?.cancel();
     rectAnim.current = null;
     chipAnim.current = null;
-    if (node) lastRect.current = node.getBoundingClientRect();
+    if (node) lastRect.current = rectOf(node);
   };
 
   return { cancelAll };

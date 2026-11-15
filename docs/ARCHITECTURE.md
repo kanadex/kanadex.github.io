@@ -4,7 +4,7 @@
 
 ```
 ┌─────────────────────────────────────────────┐
-│ Boot（开机画面，z-index: 1000）              │  纯黑 / 手写的 Kanadex_OS / 加载环，3 秒后卸载
+│ Boot（开机画面，z-index: 1000）              │  纯黑 / 图标滑入 + Kanadex_OS / 加载环，3 秒后卸载
 ├─────────────────────────────────────────────┤
 │ Stage（固定舞台，z-index: 0）                │  夜空 / 山丘 / 桌面 / 台灯
 ├─────────────────────────────────────────────┤
@@ -95,7 +95,7 @@ lamp__head   （灯颈 + 灯罩 + 光锥） 原点：(473, 137)
 | 文件 | 管什么 | 驱动 |
 | --- | --- | --- |
 | `desktop/useWindowMotion.ts` | 最大化/还原的 rect、最小化/还原的 transform | WAAPI |
-| `desktop/useWindowFade.ts` | 进入与退出的 opacity（200ms / 180ms） | WAAPI |
+| `desktop/useWindowFade.ts` | 进入与退出的 opacity + scale（200ms / 180ms） | WAAPI |
 
 - 进入 = 组件挂载（关闭后重开也是同一条路径），所以开机后终端的入场不需要任何特殊分支。
 - 退出必须**播完再提交**：红点与任务栏菜单都走 `lib/windowBus.requestClose` → `WindowFrame.close`，
@@ -108,7 +108,7 @@ lamp__head   （灯颈 + 灯罩 + 光锥） 原点：(473, 137)
 ## 开机
 
 ```
-src/boot/BootScreen.tsx   纯黑 + 手写的名字 + 加载环；自己管 3s 计时、字体等待与退场
+src/boot/BootScreen.tsx   纯黑 + 图标滑入 + 名字浮现 + 加载环；自己管 3s 计时与退场
 src/styles/boot.css       上面那一屏的全部样式（遮罩写法、环的规格都在这里）
 ```
 

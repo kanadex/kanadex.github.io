@@ -1,6 +1,8 @@
 /* ---------- 开机画面 ----------
- * 纯黑一屏、一行写出来的名字、一个不确定状态的加载环，停留 3 秒，
+ * 纯黑一屏、左图标右名字的品牌行、一个不确定状态的加载环，停留 3 秒，
  * 然后和站点交叉淡出（站点本体见 base.css 的 .app / html[data-booting]）。
+ * 品牌行的节奏对齐 VerseBox 的 loading：图标从右滑入，框与底线先后出现，
+ * 名字 64% 后浮现，最后 >_ 轻摆一次。
  * 这一层不接收指针：它只是一段过场，3 秒里用户点不到任何东西，也不需要点。
  */
 
@@ -17,6 +19,7 @@
   color: var(--white);
   user-select: none;
   pointer-events: none;
+  overflow: hidden;
   opacity: 1;
   transition: opacity 480ms var(--settle);
 }
@@ -35,11 +38,70 @@
   white-space: nowrap;
 }
 
-/* 名字：和左上角墙上那个同一套字形，只是更大。
- * "写"出来的做法：遮罩是一张两倍宽的软边墨迹，左实右虚，从右往左滑过整行。
- * 遮罩的边界滑过哪里，哪里的字才露出来，所以是从左往右一笔写成。
- * 96° 给了它一个笔尖角度：上缘略早、下缘略晚，不是一条直直的扫描线。 */
-.boot__word {
+/* 品牌行：左图标、右名字，整组居中；窄屏允许换行，不横向溢出。 */
+.boot__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 1.6vw, 20px);
+}
+
+/* 图标：细边圆角方框里一枚八分音符，对应 VerseBox 的方框 + 音符。
+ * 整枚图标从右侧 124px 处滑入；框与音符同组进入，底线稍早，名字最后浮现。
+ * 124px 与 1600ms 的节奏直接对齐参考页，不按字号重新算。 */
+.boot__mark {
+  width: clamp(56px, 6.4vw, 92px);
+  height: auto;
+  overflow: visible;
+  color: var(--white);
+  transform: translateX(124px);
+  animation: boot-mark-shift 1600ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.boot__part {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 框与音符是一个组：同一条动画一起淡入、一起从 +30px 回位。
+ * 拆成两条动画就会出现"音符先飘进来、框后到"的错位。 */
+.boot__head {
+  animation: boot-chevron-third 1600ms ease both;
+}
+
+.boot__part--underline {
+  animation: boot-chevron-second 1600ms ease both;
+}
+
+/* 符头与符尾是实心的：音符要一眼认出来，只用线描会把符头画成一个圈。
+ * 符干单独一条细线，粗细和方框的边一致。 */
+.boot__solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.boot__stem {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+/* 音符轻摆：以 bbox 顶边中点（≈ 符干顶端，悬挂点）为轴转一次。
+ * 整枚图标在 72%（1152ms）滑到位，轻摆就从 1150ms 开始、1710ms 收住；
+ * 名字 1344ms 落定，两者交叠，摆完不拖在后面。 */
+.boot__note {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: boot-note-sway 560ms 1150ms 1 both;
+}
+
+/* 名字：和左上角墙上那个同一套字形，只是更大。 */
+.boot__name {
   display: block;
   font-family: var(--serif);
   font-size: clamp(3.4rem, 9.6vw, 7.6rem);
@@ -47,29 +109,77 @@
   line-height: 1;
   letter-spacing: -0.012em;
   color: var(--white);
-  -webkit-mask-image: linear-gradient(96deg, #000 0 50%, transparent 51.2% 100%);
-  mask-image: linear-gradient(96deg, #000 0 50%, transparent 51.2% 100%);
-  -webkit-mask-size: 200% 100%;
-  mask-size: 200% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: 100% 0;
-  mask-position: 100% 0;
+  animation: boot-name-reveal 1600ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
 }
 
-.boot__word.is-writing {
-  animation: boot-write 1500ms cubic-bezier(0.33, 0, 0.2, 1) forwards;
-}
-
-@keyframes boot-write {
-  from {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
+@keyframes boot-mark-shift {
+  0%,
+  50% {
+    transform: translateX(124px);
   }
 
-  to {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
+  72%,
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes boot-chevron-second {
+  0%,
+  16% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  46%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+}
+
+@keyframes boot-chevron-third {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  50%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes boot-name-reveal {
+  0%,
+  64% {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  84%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 一次完整轻摆：出去（减速）→ 回正（轻微过冲后停稳） */
+@keyframes boot-note-sway {
+  0% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  32% {
+    transform: rotate(-5deg);
+    animation-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  100% {
+    transform: rotate(0deg);
   }
 }
 
@@ -141,5 +251,28 @@
 @keyframes boot-ring-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot__mark,
+  .boot__head,
+  .boot__part--underline,
+  .boot__name {
+    animation-duration: 1ms;
+  }
+
+  .boot__note {
+    animation: none;
+    transform: rotate(0deg);
+  }
+
+  .boot__loader {
+    animation: none;
+    opacity: 1;
+  }
+
+  .boot__ring {
+    animation: none;
   }
 }

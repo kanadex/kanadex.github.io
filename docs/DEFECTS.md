@@ -33,9 +33,9 @@
 
 | 23 | 最大化状态拖动还原时仍有过渡动画 | 拖动还原必须 0 个动画对象、窗口立刻贴到指针下 | fixed | 根因：还原时 `maximized` 翻假触发 rect WAAPI，且 `fill:'both'` 会盖住拖动写的 left/top。加 `isDragging()` 闸门后：最大化 1328px；按下移动 12px 后 `anims:0, isMax:false, w:637, l:401`；继续拖到 …`l:521, t:138`（宽度不再变化，位移跟随指针） |
 
-| 24 | 打开页面没有开机画面，直接出桌面 | 0–3s 纯黑 + 居中手写名字 + 加载环；3s 后交叉淡出，终端此时才进入 | fixed | 页面内计时：开机层 3000ms 后撤 `data-booting`；`.app` 480ms 淡入；`inert` `true → false`。过场帧：`_bin/shots/final/x00080.jpg`（黑屏写字）、`x00470.jpg`（交叉淡出）、`x00950.jpg`（桌面 + 终端） |
-| 25 | 窗口进入/退出没有动画（打开即出现、关闭即消失） | 进入 200ms opacity 淡入；退出 180ms 淡出，播完才卸载；都不许缩放进场、不许回弹 | fixed | 进入 35ms：`opacity .186`，`getAnimations()[0]` = 200ms / `cubic-bezier(.25,1,.5,1)` / keyframes 只有 opacity；退出 60ms：`opacity .267`、180ms，260ms 后 DOM 里没有 |
-| 26 | 终端在页面加载时就挂在桌面上，入场不走窗口动画 | 开机退场后才 `open('terminal')`，入场复用 WindowFrame 的 200ms 淡入 | fixed | 开机期间 `.win` 数 = 0；退场后挂载即带 200ms opacity 动画；最小化态关闭 30ms 内从 DOM 消失（不播看不见的淡出） |
+| 24 | 打开页面没有开机画面，直接出桌面 | 0–3s 纯黑 + 音符图标滑入 + `Kanadex_OS` 浮现 + 加载环；3s 后交叉淡出，终端此时才进入 | fixed | 页面内计时：开机层 3000ms 后撤 `data-booting`；`.app` 480ms 淡入；`inert` `true → false`。过场帧：`_bin/shots/final/x00080.jpg`（黑屏写字）、`x00470.jpg`（交叉淡出）、`x00950.jpg`（桌面 + 终端） |
+| 25 | 窗口进入/退出没有动画（打开即出现、关闭即消失） | 进入 200ms opacity 0→1 + scale 0.94→1；退出 180ms opacity 1→0 + scale 1→0.94，播完才卸载；不回弹 | fixed | 进入 40ms：`scale .9758`、`opacity .596`；退出 90ms：`scale .944`、`opacity .066`；keyframes = opacity + scale；见 #38 的 rect 起点 |
+| 26 | 终端在页面加载时就挂在桌面上，入场不走窗口动画 | 开机退场后才 `open('terminal')`，入场复用 WindowFrame 的 200ms 淡入 + 缩放 | fixed | 开机期间 `.win` 数 = 0；退场后挂载即带 200ms opacity + scale 动画；最小化态关闭 30ms 内从 DOM 消失（不播看不见的淡出） |
 
 | 27 | 介绍写成"Android 运行时与界面组件的作者"，夸大且不准 | 只写事实：维护 GeometryOS、VerseBox、QZXUI；GeometryOS 注明维护者之一 | fixed | 对照 `github.com/kanadex` 的 README 与 GeometryOS 组织仓库；`siteConfig`、关于面板、`whoami`、`about.txt` 四处统一；`whoami` 回读 `kanadex / 维护 GeometryOS、VerseBox 和 QZXUI。/ github.com/kanadex` |
 | 28 | 卡片右上角状态章是 0.68rem 的系统楷体，像随手打的标签 | 自托管 ZCOOL KuaiLe 子集（1.7KB，OFL）；字与框分开：框走 `#ink-fine`，字不过滤镜；只有"长期维护"用暖色 | fixed | `getComputedStyle(stamp).fontFamily = "ZCOOL KuaiLe"`，13.12px；`document.fonts.check('1em "ZCOOL KuaiLe"', '长期维护') = true`；截图 `_bin/shots/copy/d02-stamps.png` |
@@ -51,6 +51,14 @@
 | 36 | 关于面板写的是"我在打磨什么"，不是系统信息 | 除技术栈外改成 neofetch 字段，与终端共用 `systemFields` | fixed | DOM 回读 `OS KanadexOS 1.0.0`、`Kernel React 18 / Vite 5`、`Shell kanadex-term 1.0.0`；截图 `_bin/shots/about/a01-about.png` |
 
 | 37 | `neofetch` 只剩回显，字符画与字段都没有 | 命令异常必须留一行；dev server 返回新模块；字符画与字段都在 | fixed | 终端 `term__line--art` 28 行、`OS: KanadexOS 1.0.0`；截图 `_bin/shots/neo/n01-neofetch.png` |
+
+| 38 | 刚打开就最大化，rect 起点被入场 scale 吃掉 | 入场 scale 用 `rectOf` 反算布局盒；`WindowFrame` 用回调 ref 在挂载后触发一次重渲染，让运动钩子先拿到节点 | fixed | 刚挂载就最大化：rect 起点宽 584.312px，`offsetWidth` 584；进入 40ms `scale .9758`；退出 90ms `scale .944` |
+
+| 39 | 开机图标被画成代码图标（终端框 + `>_`），不是音符 | 细边圆角方框 + 八分音符：实心符头 12.8×9.8（−18°）、细符干、实心符尾；音符在框内光学居中 | fixed | 音符 bbox 23.8–48.2 × 10.4–42.8，中心 (36, 26.6) = 框中心 (36, 26)；符头 fill 为纯白、符干 2.6px |
+| 40 | 音符自己先飘进来，方框后到；轻摆拖在入场之后 | 框与音符放进 `boot__head` 同一组、同一条动画；轻摆从图标落地的 1150ms 起 | fixed | t=0：组 `opacity 0`、`translateX 30`，框与音符同步；t=800：`opacity 1`、`translateX 0`；t=1200：音符 `rotate −3.1°`；t=1560 仍 0.26°、1710 归零 |
+
+| 41 | dock chip 外面套了一圈胶囊底/边框，图标不清爽 | chip 去掉 border / background / 圆角，只留图标与下沿横线；dock 本体改成胶囊 | fixed | `.dock` 计算样式 `border-radius: 999px`、`padding: 5px 10px`，整体 95×49；chip `border: 0px`、`border-radius: 0px`、`background: rgba(0,0,0,0)` |
+| 42 | 悬停菜单一点就出来，移动端轻点也闪菜单 | 800ms 意图延迟；等待中点击 → `muted`，不补弹，离开再回来才展开；长按才出菜单 | fixed | 悬停 500ms 点击 → 之后 1.2s 仍 `menu=false`；移开再回、300ms `false` / 950ms `true`；开着时点击 → 收起且不再自己出现；按住 900ms → `true`，松手仍 `true`；触摸轻点 → `false`，chip 变 `is-min` |
 
 ## 说明
 

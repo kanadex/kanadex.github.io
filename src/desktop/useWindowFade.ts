@@ -4,11 +4,14 @@ import { cssEasing } from '@/lib/easing';
 import { prefersReducedMotion } from '@/lib/motion';
 
 /**
- * 窗口的"进入"与"退出"：只有 opacity，一条动画，不加位移、不加缩放、不回弹。
+ * 窗口的"进入"与"退出"：opacity + scale，一条动画，不加位移、不回弹。
+ * 进入从 0.96 放大到 1，退出从 1 缩到 0.96——"真的出现/消失"，不是只改透明度。
+ * scale 是独立的 CSS 属性，和最小化的 transform 分开；见 useWindowMotion 的 rectOf。
  *
  * 为什么不并进 useWindowMotion：那个钩子管的是 rect 与 transform（最大化、最小化），
  * 这里管的是"这扇窗在不在"。最小化必须继续是收缩到任务栏 chip，绝不能淡出——
  * 两个动作共用一个动画，用户就分不清"收进任务栏"和"关掉了"。
+ * 这里改的是独立的 CSS scale，不碰 transform，最小化的 chip 位移动画不受影响。
  */
 const ENTER_MS = 200;
 const EXIT_MS = 180;
@@ -37,7 +40,10 @@ export function useWindowFade(nodeRef: RefObject<HTMLElement>): WindowFade {
     if (!node || prefersReducedMotion()) return;
     enter.current?.cancel();
     const anim = node.animate(
-      [{ opacity: 0 }, { opacity: 1 }],
+      [
+        { opacity: 0, scale: 0.94 },
+        { opacity: 1, scale: 1 },
+      ],
       { duration: ENTER_MS, easing: cssEasing('--settle'), fill: 'both' }
     );
     enter.current = anim;
@@ -78,7 +84,10 @@ export function useWindowFade(nodeRef: RefObject<HTMLElement>): WindowFade {
     recover.current = null;
 
     const anim = node.animate(
-      [{ opacity: 1 }, { opacity: 0 }],
+      [
+        { opacity: 1, scale: 1 },
+        { opacity: 0, scale: 0.94 },
+      ],
       { duration: EXIT_MS, easing: cssEasing('--settle'), fill: 'both' }
     );
     exit.current = anim;

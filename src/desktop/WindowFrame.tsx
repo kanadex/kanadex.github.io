@@ -43,7 +43,13 @@ const COLLAPSE_MS = 320;
 
 export function WindowFrame({ state, focused, children }: WindowFrameProps) {
   const meta = metaOf(state.id);
-  const nodeRef = useRef<HTMLElement>(null);
+  const nodeRef = useRef<HTMLElement | null>(null);
+  /** 第一次渲染时 ref 还是 null；用 state 触发一次重渲染，运动钩子才能拿到节点并记录起始 rect。 */
+  const [node, setNode] = useState<HTMLElement | null>(null);
+  const attachNode = useCallback((el: HTMLElement | null) => {
+    nodeRef.current = el;
+    if (el) setNode(el);
+  }, []);
   const [collapsing, setCollapsing] = useState(false);
   const [dragBox, setDragBox] = useState<Box | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -84,7 +90,7 @@ export function WindowFrame({ state, focused, children }: WindowFrameProps) {
   }, [state.id]);
 
   const { cancelAll } = useWindowMotion({
-    node: nodeRef.current,
+    node,
     maximized: state.maximized,
     minimized: state.minimized,
     chipTransform,
@@ -319,7 +325,7 @@ export function WindowFrame({ state, focused, children }: WindowFrameProps) {
 
   return (
     <section
-      ref={nodeRef}
+      ref={attachNode}
       className={
         'win win--' + meta.tone + (state.maximized ? ' is-max' : '') + (focused ? ' is-focus' : '') +
         (dragging ? ' is-dragging' : '') + (resizing ? ' is-resizing' : '')
