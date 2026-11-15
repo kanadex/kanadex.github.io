@@ -34,13 +34,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
-      # package.json 的 build = typecheck + vite build，不再单独跑一次 typecheck
+      # build 已含 typecheck 与产物完整性检查，不再单独跑
       - run: pnpm run build
+
+      # 打包前先对着产物冒烟：坏掉的 dist 不许进 release
+      - run: pnpm run test:smoke
+        env:
+          SMOKE_BROWSER: /usr/bin/google-chrome
 
       - name: Pack dist
         run: |

@@ -60,6 +60,8 @@
 | 41 | dock chip 外面套了一圈胶囊底/边框，图标不清爽 | chip 去掉 border / background / 圆角，只留图标与下沿横线；dock 本体改成胶囊 | fixed | `.dock` 计算样式 `border-radius: 999px`、`padding: 5px 10px`，整体 95×49；chip `border: 0px`、`border-radius: 0px`、`background: rgba(0,0,0,0)` |
 | 42 | 悬停菜单一点就出来，移动端轻点也闪菜单 | 800ms 意图延迟；等待中点击 → `muted`，不补弹，离开再回来才展开；长按才出菜单 | fixed | 悬停 500ms 点击 → 之后 1.2s 仍 `menu=false`；移开再回、300ms `false` / 950ms `true`；开着时点击 → 收起且不再自己出现；按住 900ms → `true`，松手仍 `true`；触摸轻点 → `false`，chip 变 `is-min` |
 
+| 43 | 发布只有"能构建"，没有产物校验与冒烟 | 构建后跑 `check:dist`；发布前对着 `dist/` 跑 13 条 CDP 冒烟；坏产物不许进 release | fixed | `check:dist` 正常产物 37 个文件全命中；故意把图标路径改成不存在的文件 → 退出码 1 并逐条列出；`test:smoke` 13/13 通过（含"等待中点击后菜单不补弹"） |
+
 ## 说明
 
 - 判据已从"中间值存在"升级为"9 点采样 + 8 帧长图"。headless 下 rAF 被节流到 ~20fps，

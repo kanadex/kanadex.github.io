@@ -19,8 +19,17 @@
 
 ```bash
 pnpm install
-pnpm dev      # http://localhost:7777
-pnpm build    # dist/
+pnpm dev      # http://localhost:7777（热更新）
 ```
 
-需要 Node ≥ 20.10 与 pnpm
+需要 Node ≥ 22 与 pnpm。
+
+## 发布校验
+
+```bash
+pnpm run typecheck   # 类型
+pnpm run build       # 类型 + 构建 + 产物完整性（check:dist）
+pnpm run test:smoke  # 对着 dist 用真实浏览器冒烟
+```
+
+详见 [docs/RELEASE.md](docs/RELEASE.md)。
