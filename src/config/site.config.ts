@@ -52,7 +52,7 @@ export const siteConfig: SiteConfig = {
   name: 'Kanadex',
   handle: 'kanadex',
   bootName: 'Kanadex_OS',
-  release: '1.0.0',
+  release: '1.0.1',
   os: 'KanadexOS',
   siteUrl: 'https://kanadex.github.io',
   title: 'Kanadex',
