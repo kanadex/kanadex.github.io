@@ -3,9 +3,11 @@
  *
  * 不是"两片半透明多边形"：真正的做法是四层楔形 + 罩口灯泡辉光 + 颗粒侵蚀。
  * 四层楔形的半角按 5.5° / 8.1° / 10.7° / 13.3° 递增（越外层越淡），
- * 锥长由"灯口到目标的距离"决定（×1.45，且不小于画布宽度的 0.8 倍），
- * 所以灯指向远处时锥会自然变长；最后用一层噪点做 destination-out，
- * 把填充蚀出粗糙的边——这就是手绘光的"笔触"，不是高斯模糊。
+ * 锥长由 distance 决定（×1.45，且不小于画布宽度的 0.8 倍）。
+ *
+ * distance 由调用方**逐帧平滑**后传进来，不在这里从 target 现算：
+ * 目标一换，直线距离是阶跃的；照着它算长度，光锥会在角度还在转的时候先"咔"地缩短一截。
+ * 最后用一层噪点做 destination-out，把填充蚀出粗糙的边——手绘光的笔触，不是高斯模糊。
  */
 
 export interface BeamFrame {
@@ -13,8 +15,11 @@ export interface BeamFrame {
   bulb: { x: number; y: number };
   /** 光锥在屏幕上的角度（度） */
   angleDeg: number;
-  /** 目标点（视口坐标），null 表示没有目标 */
-  target: { x: number; y: number } | null;
+  /**
+   * 已经平滑过的"灯口到目标"的距离（视口 px）。
+   * 目标切换时这个值必须连续变化，否则锥长会跳；所以由调用方插值，出现在这里只是结果。
+   */
+  distance: number;
   /** 灯的缩放（灯包围盒宽 / 815），决定锥口的粗细 */
   scale: number;
   /** 亮度 0..1 */
@@ -83,8 +88,7 @@ export function createBeamRenderer(canvas: HTMLCanvasElement) {
       const rad = (next.angleDeg * Math.PI) / 180;
       const dir = { x: Math.cos(rad), y: Math.sin(rad) };
       const perp = { x: -dir.y, y: dir.x };
-      const target = next.target ?? { x: next.bulb.x + dir.x * 400, y: next.bulb.y + dir.y * 400 };
-      const distance = Math.hypot(target.x - next.bulb.x, target.y - next.bulb.y);
+      const distance = Math.max(next.distance, 1);
       const length = Math.max(distance * 1.45, Math.min(width, 900) * 0.8);
       const mouth = 220 * next.scale * 0.9;
       const bulbRadius = 110 * next.scale + 12;

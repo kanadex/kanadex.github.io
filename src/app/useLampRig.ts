@@ -66,6 +66,8 @@ export function useLampRig(): LampRigRefs {
     let bobValue = 0;
     let glanceValue = 0;
     let headWritten = 0;
+    /** 灯口到目标的距离，逐帧逼近；换目标时它是连续的，锥长才不会硬切。 */
+    let beamDistance = -1;
     let box: { left: number; top: number; width: number } | null = null;
     let boxAt = 0;
 
@@ -141,12 +143,20 @@ export function useLampRig(): LampRigRefs {
       // 灯头吃掉全部余量：总转角 = 底座 + 肘 + 灯头 = 指向角 − 静止角
       headWritten = aimAxis.value - REST_AXIS - upperAxis.value - leanAxis.value + wobble;
 
-      // 光锥：从罩口朝目标打出去，长度跟着距离变
+      // 光锥：从罩口朝目标打出去，长度跟着距离变。
+      // 距离必须逐帧逼近：目标一换，直线距离是阶跃的，照它画锥长会硬切一截，
+      // 而角度还在弹簧上转，两者就割裂了。时间常数 ~0.16s，比角度弹簧略快，
+      // 所以看上去是"跟着摆过去的同时顺带伸长/缩短"，不是先缩短再转头。
       if (renderer) {
+        const rawDistance = target
+          ? Math.hypot(target.point.x - bulbPage.x, target.point.y - bulbPage.y)
+          : 400;
+        if (beamDistance < 0) beamDistance = rawDistance;
+        beamDistance += (rawDistance - beamDistance) * (1 - Math.exp(-dt / 0.16));
         renderer.draw({
           bulb: bulbPage,
           angleDeg: REST_AXIS + leanAxis.value + upperAxis.value + headWritten,
-          target: target ? target.point : null,
+          distance: beamDistance,
           scale,
           alpha: 1,
         });
